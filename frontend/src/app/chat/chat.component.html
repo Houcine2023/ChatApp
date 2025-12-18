@@ -1,0 +1,891 @@
+<div class="container-fluid">
+  <!-- Added notification toast for new group additions -->
+  <div
+    *ngIf="newGroupNotification"
+    class="position-fixed top-0 end-0 p-3"
+    style="z-index: 1050"
+  >
+    <div class="toast show" role="alert">
+      <div class="toast-header">
+        <i class="mdi mdi-account-group text-success me-2"></i>
+        <strong class="me-auto">New Group</strong>
+        <button
+          type="button"
+          class="btn-close"
+          (click)="newGroupNotification = null"
+        ></button>
+      </div>
+      <div class="toast-body">
+        You've been added to "{{ newGroupNotification.name }}"
+      </div>
+    </div>
+  </div>
+  <div class="d-lg-flex">
+    <div class="chat-leftsidebar me-lg-4">
+      <div class="">
+        <div class="py-4 border-bottom">
+          <div class="media">
+            <div class="align-self-center me-3 position-relative">
+              <img
+                src="assets/images/users/avatar-1.jpg"
+                class="avatar-xs rounded-circle"
+                alt=""
+              />
+              <!-- Added status indicator for current user -->
+              <span
+                class="position-absolute bottom-0 end-0 p-1 bg-white rounded-circle"
+              >
+                <span
+                  class="d-block rounded-circle"
+                  [ngClass]="getUserStatusClass(userId)"
+                  style="width: 8px; height: 8px"
+                ></span>
+              </span>
+            </div>
+            <div class="media-body">
+              <h5 class="font-size-15 mt-0 mb-1">{{ username }}</h5>
+              <p class="text-muted mb-0">
+                <i
+                  class="mdi mdi-circle"
+                  [ngClass]="{
+                    'text-success': isUserOnline(userId),
+                    'text-muted': !isUserOnline(userId)
+                  }"
+                ></i>
+                {{ isUserOnline(userId) ? "Active now" : "Offline" }}
+              </p>
+            </div>
+            <div ngbDropdown>
+              <div class="dropdown chat-noti-dropdown active">
+                <button
+                  class="btn dropdown-toggle"
+                  type="button"
+                  ngbDropdownToggle
+                >
+                  <i class="bx bx-bell bx-tada"></i>
+                </button>
+                <div class="dropdown-menu dropdown-menu-end" ngbDropdownMenu>
+                  <a class="dropdown-item" href="javascript: void(0);"
+                    >Action</a
+                  >
+                  <a class="dropdown-item" href="javascript: void(0);"
+                    >Another action</a
+                  >
+                  <a class="dropdown-item" href="javascript: void(0);"
+                    >Something else here</a
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="search-box chat-search-box py-4">
+          <div class="position-relative">
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Search..."
+              (input)="searchUsers($event)"
+            />
+            <i class="bx bx-search-alt search-icon"></i>
+          </div>
+        </div>
+        <div class="chat-leftsidebar-nav">
+          <ul
+            ngbNav
+            #nav="ngbNav"
+            [activeId]="1"
+            class="nav nav-pills nav-justified chat-nav-pills"
+          >
+            <li [ngbNavItem]="1">
+              <a ngbNavLink>
+                <i class="bx bx-chat font-size-20 d-sm-none"></i>
+                <span class="d-none d-sm-block">Chat</span>
+              </a>
+              <ng-template ngbNavContent>
+                <div>
+                  <h5 class="font-size-14 mb-3">Recent</h5>
+                  <ngx-simplebar
+                    style="position: relative; height: 410px"
+                    #scrollEle
+                  >
+                    <ul class="list-unstyled chat-list">
+                      <li class="" *ngFor="let data of chatMessagesData">
+                        <a href="javascript: void(0);">
+                          <div class="media">
+                            <div class="align-self-center me-3">
+                              <i
+                                class="mdi mdi-circle font-size-10"
+                                [ngClass]="{
+                                  'text-success': isUserOnline(data.userId),
+                                  'text-muted': !isUserOnline(data.userId)
+                                }"
+                              ></i>
+                            </div>
+                            <div
+                              class="align-self-center me-3 position-relative"
+                              *ngIf="data.chatMember?.user?.image"
+                            >
+                              <img
+                                [src]="data.chatMember?.user?.image"
+                                class="rounded-circle avatar-xs"
+                                alt=""
+                              />
+                              <!-- Added status indicator for chat list users -->
+                              <span
+                                class="position-absolute bottom-0 end-0 p-1 bg-white rounded-circle"
+                              >
+                                <span
+                                  class="d-block rounded-circle"
+                                  [ngClass]="getUserStatusClass(data.userId)"
+                                  style="width: 6px; height: 6px"
+                                ></span>
+                              </span>
+                            </div>
+                            <div
+                              class="avatar-xs align-self-center me-3 position-relative"
+                              *ngIf="!data.chatMember?.user?.image"
+                            >
+                              <span
+                                class="avatar-title rounded-circle bg-soft bg-primary text-primary"
+                              >
+                                {{
+                                  (
+                                    data.chatMember?.user?.name || data.name
+                                  ).charAt(0)
+                                }}
+                              </span>
+                              <!-- Added status indicator for avatar initials -->
+                              <span
+                                class="position-absolute bottom-0 end-0 p-1 bg-white rounded-circle"
+                              >
+                                <span
+                                  class="d-block rounded-circle"
+                                  [ngClass]="getUserStatusClass(data.userId)"
+                                  style="width: 6px; height: 6px"
+                                ></span>
+                              </span>
+                            </div>
+                            <div class="media-body overflow-hidden">
+                              <h5 class="text-truncate font-size-14 mb-1">
+                                {{ data.name }}
+                              </h5>
+                              <p class="text-truncate mb-0">
+                                {{ data.content }}
+                              </p>
+                            </div>
+                            <div class="font-size-11">{{ data.createdAt }}</div>
+                          </div>
+                        </a>
+                      </li>
+                    </ul>
+                  </ngx-simplebar>
+                </div>
+              </ng-template>
+            </li>
+            <li [ngbNavItem]="2">
+              <a ngbNavLink>
+                <i class="bx bx-group font-size-20 d-sm-none"></i>
+                <span class="d-none d-sm-block">Groups</span>
+              </a>
+              <ng-template ngbNavContent>
+                <div
+                  class="d-flex justify-content-between align-items-center mb-3"
+                >
+                  <h5 class="font-size-14 mb-0">Groups</h5>
+                  <button
+                    class="btn btn-sm btn-primary"
+                    (click)="modalService.open(createGroupModal)"
+                  >
+                    <i class="bx bx-plus"></i>
+                  </button>
+                </div>
+                <ngx-simplebar style="height: 350px" class="groups-scroll">
+                  <ul class="list-unstyled chat-list">
+                    <li
+                      *ngFor="let group of groups"
+                      [id]="group.id"
+                      [ngClass]="{
+                        'bg-light': newGroupNotification?.id === group.id
+                      }"
+                    >
+                      <a
+                        href="javascript: void(0);"
+                        (click)="selectGroup(group)"
+                      >
+                        <div class="media align-items-center">
+                          <div class="avatar-xs me-3">
+                            <span
+                              class="avatar-title rounded-circle text-white font-weight-bold"
+                              [ngStyle]="{
+                                'background-color': getGroupColor(group.name)
+                              }"
+                            >
+                              {{ group.name.charAt(0).toUpperCase() }}
+                            </span>
+                          </div>
+                          <div class="media-body">
+                            <h5 class="font-size-14 mb-0">
+                              {{ group.name }}
+                              
+                            </h5>
+                          </div>
+                        </div>
+                      </a>
+                    </li>
+                  </ul>
+                </ngx-simplebar>
+              </ng-template>
+            </li>
+            <li [ngbNavItem]="3">
+              <a ngbNavLink>
+                <i class="bx bx-book-content font-size-20 d-sm-none"></i>
+                <span class="d-none d-sm-block">Contacts</span>
+              </a>
+              <ng-template ngbNavContent>
+                <h5 class="font-size-14 mb-3">Contacts</h5>
+                <ngx-simplebar style="height: 410px" #scrollEle>
+                  <ul class="list-unstyled chat-list">
+                    <li *ngFor="let user of allUsers">
+                      <a href="javascript: void(0);">
+                        <div class="media align-items-center">
+                          <div class="avatar-xs me-3 position-relative">
+                            <img
+                              *ngIf="user.image"
+                              [src]="user.image"
+                              class="rounded-circle avatar-xs"
+                              alt="User Image"
+                            />
+                            <span
+                              *ngIf="!user.image"
+                              class="avatar-title rounded-circle bg-soft bg-primary text-primary"
+                            >
+                              {{ user.name.charAt(0) }}
+                            </span>
+                            <!-- Added status indicator for contacts -->
+                            <span
+                              class="position-absolute bottom-0 end-0 p-1 bg-white rounded-circle"
+                            >
+                              <span
+                                class="d-block rounded-circle"
+                                [ngClass]="getUserStatusClass(user.id)"
+                                style="width: 8px; height: 8px"
+                              ></span>
+                            </span>
+                          </div>
+                          <div class="media-body">
+                            <h5 class="font-size-14 mb-0">{{ user.name }}</h5>
+                            <!-- Added status text for contacts -->
+                            <p class="text-muted mb-0 font-size-12">
+                              <i
+                                class="mdi mdi-circle font-size-10"
+                                [ngClass]="{
+                                  'text-success': isUserOnline(user.id),
+                                  'text-muted': !isUserOnline(user.id)
+                                }"
+                              ></i>
+                              {{
+                                isUserOnline(user.id) ? "Active now" : "Offline"
+                              }}
+                            </p>
+                          </div>
+                        </div>
+                      </a>
+                    </li>
+                  </ul>
+                </ngx-simplebar>
+              </ng-template>
+            </li>
+          </ul>
+          <div [ngbNavOutlet]="nav" class="my-4"></div>
+        </div>
+      </div>
+    </div>
+    <div class="w-100 user-chat" *ngIf="selectedGroup">
+      <div class="card">
+        <div class="p-4 border-bottom">
+          <div class="row">
+            <div class="col-md-4 col-9">
+              <h5 class="font-size-15 mb-1">{{ selectedGroup.name }}</h5>
+              <p class="text-muted mb-0">
+                <i class="mdi mdi-circle text-success align-middle me-1"></i>
+                Group Chat
+              </p>
+            </div>
+            <div class="col-md-8 col-3">
+              <ul class="list-inline user-chat-nav text-end mb-0">
+                <li class="list-inline-item d-none d-sm-inline-block">
+                  <div class="dropdown" ngbDropdown>
+                    <button
+                      class="btn nav-btn dropdown-toggle"
+                      ngbDropdownToggle
+                      type="button"
+                    >
+                      <i class="bx bx-search-alt-2"></i>
+                    </button>
+                    <div
+                      class="dropdown-menu dropdown-menu-end dropdown-menu-md"
+                      ngbDropdownMenu
+                    >
+                      <form class="p-3">
+                        <div class="m-0">
+                          <div class="input-group">
+                            <input
+                              type="text"
+                              class="form-control"
+                              placeholder="Search ..."
+                              aria-label="Recipient's username"
+                            />
+                            <button class="btn btn-primary" type="submit">
+                              <i class="mdi mdi-magnify"></i>
+                            </button>
+                          </div>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                </li>
+                <li
+                  class="list-inline-item d-none d-sm-inline-block"
+                  *ngIf="isAdmin"
+                >
+                  <div class="dropdown" ngbDropdown>
+                    <button
+                      class="btn nav-btn dropdown-toggle"
+                      type="button"
+                      ngbDropdownToggle
+                    >
+                      <i class="bx bx-cog"></i>
+                    </button>
+                    <div
+                      class="dropdown-menu dropdown-menu-end"
+                      ngbDropdownMenu
+                    >
+                      <a
+                        class="dropdown-item"
+                        href="javascript: void(0);"
+                        (click)="modalService.open(addMemberModal)"
+                        >Add Members</a
+                      >
+                      <a class="dropdown-item" href="javascript: void(0);"
+                        >Clear chat</a
+                      >
+                      <a class="dropdown-item" href="javascript: void(0);"
+                        >Muted</a
+                      >
+                      <a class="dropdown-item" href="javascript: void(0);"
+                        >Delete</a
+                      >
+                    </div>
+                  </div>
+                </li>
+                <li class="list-inline-item">
+                  <div class="dropdown" ngbDropdown>
+                    <button
+                      class="btn nav-btn dropdown-toggle"
+                      type="button"
+                      ngbDropdownToggle
+                    >
+                      <i class="bx bx-dots-horizontal-rounded"></i>
+                    </button>
+                    <div
+                      class="dropdown-menu dropdown-menu-end"
+                      ngbDropdownMenu
+                    >
+                      <a class="dropdown-item" href="javascript: void(0);"
+                        >Action</a
+                      >
+                      <a class="dropdown-item" href="javascript: void(0);"
+                        >Another action</a
+                      >
+                      <a class="dropdown-item" href="javascript: void(0);"
+                        >Something else</a
+                      >
+                    </div>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="chat-conversation p-3" style="position: relative">
+            <ngx-simplebar style="height: 470px" #scrollRef>
+              <ul class="list-unstyled">
+                <li>
+                  <div class="chat-day-title">
+                    <span class="title">Today</span>
+                  </div>
+                </li>
+                <!-- History messages -->
+                <li
+                  *ngFor="let msg of loadGroupMessages"
+                  [ngClass]="{ right: msg.senderId === userId }"
+                >
+                  <div class="conversation-list">
+                    <div class="dropdown" ngbDropdown>
+                      <a
+                        class="dropdown-toggle"
+                        href="javascript: void(0);"
+                        role="button"
+                        ngbDropdownToggle
+                      >
+                        <i class="bx bx-dots-vertical-rounded"></i>
+                      </a>
+                      <div class="dropdown-menu" ngbDropdownMenu>
+                        <a class="dropdown-item" href="javascript: void(0);"
+                          >Copy</a
+                        >
+                        <a class="dropdown-item" href="javascript: void(0);"
+                          >Save</a
+                        >
+                        <a class="dropdown-item" href="javascript: void(0);"
+                          >Forward</a
+                        >
+                        <a class="dropdown-item" href="javascript: void(0);"
+                          >Delete</a
+                        >
+                      </div>
+                    </div>
+                    <div class="ctext-wrap">
+                      <div class="conversation-name d-flex align-items-center">
+                        <!-- Added status indicator for message senders -->
+                        <i
+                          class="mdi mdi-circle font-size-10 me-1"
+                          [ngClass]="{
+                            'text-success': isUserOnline(msg.senderId),
+                            'text-muted': !isUserOnline(msg.senderId)
+                          }"
+                        ></i>
+                        {{ msg.senderName }}
+                      </div>
+                      <!-- Image messages -->
+                      <img
+                        *ngIf="msg.messageType === 'IMAGE'"
+                        [src]="
+                          'http://localhost:8080' + (msg.fileUrl || msg.content)
+                        "
+                        alt="Image"
+                        class="img-fluid rounded"
+                        style="max-width: 200px; max-height: 200px"
+                      />
+                      <!-- Text messages -->
+                      <p *ngIf="msg.messageType === 'TEXT'">
+                        {{ msg.content }}
+                      </p>
+                      <!-- File messages -->
+                      <a
+                        *ngIf="
+                          msg.messageType === 'FILE' ||
+                          msg.messageType === 'OTHER'
+                        "
+                        [href]="'http://localhost:8080' + msg.fileUrl"
+                        target="_blank"
+                        class="text-decoration-underline"
+                      >
+                        {{ msg.fileName || "Download File" }}
+                      </a>
+                      <p class="chat-time mb-0">
+                        <i class="bx bx-time-five align-middle me-1"></i>
+                        {{ msg.createdAt | date : "shortTime" }}
+                      </p>
+                    </div>
+                  </div>
+                </li>
+                <!-- WebSocket messages -->
+                <li
+                  *ngFor="let data of chatMessagesData"
+                  [ngClass]="{ right: data.align === 'right' }"
+                >
+                  <div class="conversation-list">
+                    <div class="dropdown" ngbDropdown>
+                      <a
+                        class="dropdown-toggle"
+                        href="javascript: void(0);"
+                        role="button"
+                        ngbDropdownToggle
+                      >
+                        <i class="bx bx-dots-vertical-rounded"></i>
+                      </a>
+                      <div class="dropdown-menu" ngbDropdownMenu>
+                        <a class="dropdown-item" href="javascript: void(0);"
+                          >Copy</a
+                        >
+                        <a class="dropdown-item" href="javascript: void(0);"
+                          >Save</a
+                        >
+                        <a class="dropdown-item" href="javascript: void(0);"
+                          >Forward</a
+                        >
+                        <a class="dropdown-item" href="javascript: void(0);"
+                          >Delete</a
+                        >
+                      </div>
+                    </div>
+                    <div class="ctext-wrap">
+                      <div class="conversation-name d-flex align-items-center">
+                        <!-- Added status indicator for WebSocket message senders -->
+                        <i
+                          class="mdi mdi-circle font-size-10 me-1"
+                          [ngClass]="{
+                            'text-success': isUserOnline(data.userId),
+                            'text-muted': !isUserOnline(data.userId)
+                          }"
+                        ></i>
+                        {{ data.chatMember?.user?.name || data.name }}
+                      </div>
+                      <!-- Image messages -->
+                      <img
+                        *ngIf="data.messageType === 'IMAGE'"
+                        [src]="
+                          'http://localhost:8080' +
+                          (data.fileUrl || data.content)
+                        "
+                        alt="Image"
+                        class="img-fluid rounded"
+                        style="max-width: 200px; max-height: 200px"
+                      />
+                      <!-- Text messages -->
+                      <p *ngIf="data.messageType === 'TEXT'">
+                        {{ data.content }}
+                      </p>
+                      <!-- File messages -->
+                      <a
+                        *ngIf="
+                          data.messageType === 'FILE' ||
+                          data.messageType === 'OTHER'
+                        "
+                        [href]="'http://localhost:8080' + data.fileUrl"
+                        target="_blank"
+                        class="text-decoration-underline"
+                      >
+                        {{ data.fileName || "Download File" }}
+                      </a>
+                      <p class="chat-time mb-0">
+                        <i class="bx bx-time-five align-middle me-1"></i>
+                        {{ data.createdAt | date : "shortTime" }}
+                      </p>
+                    </div>
+                  </div>
+                </li>
+              </ul>
+            </ngx-simplebar>
+          </div>
+          <div class="p-3 chat-input-section">
+            <form (ngSubmit)="messageSave()" [formGroup]="formData" class="row">
+              <div class="col">
+                <div class="position-relative">
+                  <input
+                    type="text"
+                    class="form-control chat-input"
+                    placeholder="Enter Message..."
+                    formControlName="message"
+                    [ngClass]="{'is-invalid': chatSubmit && form['message'].errors?.['required']}"
+                  />
+                  <div
+                    *ngIf="previewImage"
+                    class="mb-2 d-flex align-items-center"
+                  >
+                    <img
+                      [src]="previewImage"
+                      alt="Preview"
+                      class="img-thumbnail"
+                      style="max-height: 100px"
+                    />
+                    <button
+                      type="button"
+                      class="btn btn-sm btn-danger ms-2"
+                      (click)="selectedFile = null; previewImage = null"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                  <input
+                    type="file"
+                    #imageInput
+                    style="display: none"
+                    (change)="pickFile($event, 'IMAGE')"
+                    accept="image/*"
+                  />
+                  <input
+                    type="file"
+                    #fileInput
+                    style="display: none"
+                    (change)="pickFile($event, 'FILE')"
+                  />
+                  <!-- Simplified input buttons structure for better visibility -->
+                  <div class="chat-input-links">
+                    <ul class="list-inline mb-0">
+                      <li class="list-inline-item">
+                        <a
+                          href="javascript: void(0);"
+                          (click)="toggleEmojiPicker()"
+                          ngbTooltip="Emoji"
+                          placement="top"
+                        >
+                          <i class="mdi mdi-emoticon-happy-outline"></i>
+                        </a>
+                      </li>
+                      <li class="list-inline-item">
+                        <a
+                          href="javascript: void(0);"
+                          (click)="imageInput.click()"
+                          ngbTooltip="Images"
+                          placement="top"
+                        >
+                          <i class="mdi mdi-file-image-outline"></i>
+                        </a>
+                      </li>
+                      <li class="list-inline-item">
+                        <a
+                          href="javascript: void(0);"
+                          (click)="fileInput.click()"
+                          ngbTooltip="Add Files"
+                          placement="top"
+                        >
+                          <i class="mdi mdi-file-document-outline"></i>
+                        </a>
+                      </li>
+                    </ul>
+                  </div>
+                  <div *ngIf="showEmojiPicker" class="emoji-picker-container">
+                    <emoji-mart
+                      (emojiClick)="addEmoji($event)"
+                      [style]="{ width: '100%', height: '250px' }"
+                    ></emoji-mart>
+                  </div>
+                </div>
+              </div>
+              <div class="col-auto">
+                <button
+                  type="submit"
+                  class="btn btn-primary btn-rounded chat-send w-md"
+                >
+                  <span class="d-none d-sm-inline-block me-2">Send</span>
+                  <i class="mdi mdi-send"></i>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Create Group Modal -->
+  <ng-template #createGroupModal let-modal>
+    <div class="modal-header">
+      <h5 class="modal-title">Create New Group</h5>
+      <button
+        type="button"
+        class="btn-close"
+        (click)="modal.dismiss('Cross click')"
+      ></button>
+    </div>
+    <div class="modal-body">
+      <form [formGroup]="groupForm" (ngSubmit)="createGroup()">
+        <div class="mb-3">
+          <label for="groupName" class="form-label">Group Name</label>
+          <input
+            type="text"
+            class="form-control"
+            id="groupName"
+            formControlName="groupName"
+          />
+          <div
+            *ngIf="groupFormControls['groupName'].touched && groupFormControls['groupName'].errors?.['required']"
+            class="text-danger"
+          >
+            Group name is required.
+          </div>
+        </div>
+        <!-- Added user selection section for group creation -->
+        <div class="mb-3">
+          <label class="form-label">Add Members (Optional)</label>
+          <div class="position-relative">
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Search users to add..."
+              (input)="searchUsersForGroup($event)"
+              #userSearchInput
+            />
+            <i
+              class="bx bx-search-alt search-icon position-absolute"
+              style="
+                right: 10px;
+                top: 50%;
+                transform: translateY(-50%);
+                color: #74788d;
+              "
+            ></i>
+          </div>
+          <!-- User search results -->
+          <div
+            *ngIf="groupUserSearchResults.length > 0"
+            class="mt-2 border rounded"
+            style="max-height: 200px; overflow-y: auto"
+          >
+            <div
+              *ngFor="let user of groupUserSearchResults"
+              class="p-2 border-bottom hover-bg-light cursor-pointer d-flex align-items-center justify-content-between"
+              (click)="toggleUserSelection(user)"
+            >
+              <div class="d-flex align-items-center">
+                <div class="avatar-xs me-3">
+                  <img
+                    *ngIf="user.image"
+                    [src]="user.image"
+                    class="rounded-circle avatar-xs"
+                    alt="User Image"
+                  />
+                  <span
+                    *ngIf="!user.image"
+                    class="avatar-title rounded-circle bg-soft bg-primary text-primary"
+                  >
+                    {{ user.name.charAt(0) }}
+                  </span>
+                </div>
+                <span class="font-size-13">{{ user.name }}</span>
+              </div>
+              <i
+                *ngIf="isUserSelected(user.id)"
+                class="mdi mdi-check text-success"
+              ></i>
+            </div>
+          </div>
+          <!-- Selected users display -->
+          <div *ngIf="selectedUsersForGroup.length > 0" class="mt-3">
+            <label class="form-label font-size-12 text-muted"
+              >Selected Members:</label
+            >
+            <div class="d-flex flex-wrap gap-2">
+              <span
+                *ngFor="let user of selectedUsersForGroup"
+                class="badge bg-soft-primary text-primary d-flex align-items-center"
+              >
+                {{ user.name }}
+                <i
+                  class="mdi mdi-close ms-1 cursor-pointer"
+                  (click)="removeUserSelection(user.id)"
+                ></i>
+              </span>
+            </div>
+          </div>
+        </div>
+        <div class="d-flex justify-content-end gap-2">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            (click)="modal.dismiss('cancel')"
+          >
+            Cancel
+          </button>
+          <button type="submit" class="btn btn-primary">Create Group</button>
+        </div>
+      </form>
+    </div>
+  </ng-template>
+  <!-- Add Member Modal -->
+  <ng-template #addMemberModal let-modal>
+    <div class="modal-header">
+      <h5 class="modal-title">Add Members to {{ selectedGroup?.name }}</h5>
+      <button
+        type="button"
+        class="btn-close"
+        (click)="modal.dismiss('Cross click')"
+      ></button>
+    </div>
+    <div class="modal-body">
+      <div class="mb-3">
+        <label class="form-label">Search Users</label>
+        <div class="position-relative">
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Search users to add..."
+            (input)="searchUsersForAddMember($event)"
+            #addMemberSearchInput
+          />
+          <i
+            class="bx bx-search-alt search-icon position-absolute"
+            style="
+              right: 10px;
+              top: 50%;
+              transform: translateY(-50%);
+              color: #74788d;
+            "
+          ></i>
+        </div>
+        <!-- User search results for adding members -->
+        <div
+          *ngIf="addMemberSearchResults.length > 0"
+          class="mt-2 border rounded"
+          style="max-height: 200px; overflow-y: auto"
+        >
+          <div
+            *ngFor="let user of addMemberSearchResults"
+            class="p-2 border-bottom hover-bg-light cursor-pointer d-flex align-items-center justify-content-between"
+            (click)="toggleAddMemberSelection(user)"
+          >
+            <div class="d-flex align-items-center">
+              <div class="avatar-xs me-3">
+                <img
+                  *ngIf="user.image"
+                  [src]="user.image"
+                  class="rounded-circle avatar-xs"
+                  alt="User Image"
+                />
+                <span
+                  *ngIf="!user.image"
+                  class="avatar-title rounded-circle bg-soft bg-primary text-primary"
+                >
+                  {{ user.name.charAt(0) }}
+                </span>
+              </div>
+              <span class="font-size-13">{{ user.name }}</span>
+            </div>
+            <i
+              *ngIf="isAddMemberSelected(user.id)"
+              class="mdi mdi-check text-success"
+            ></i>
+          </div>
+        </div>
+        <!-- Selected users for adding to group -->
+        <div *ngIf="selectedUsersForAddMember.length > 0" class="mt-3">
+          <label class="form-label font-size-12 text-muted"
+            >Selected Users:</label
+          >
+          <div class="d-flex flex-wrap gap-2">
+            <span
+              *ngFor="let user of selectedUsersForAddMember"
+              class="badge bg-soft-primary text-primary d-flex align-items-center"
+            >
+              {{ user.name }}
+              <i
+                class="mdi mdi-close ms-1 cursor-pointer"
+                (click)="removeAddMemberSelection(user.id)"
+              ></i>
+            </span>
+          </div>
+        </div>
+      </div>
+      <div class="d-flex justify-content-end gap-2">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          (click)="modal.dismiss('cancel')"
+        >
+          Cancel
+        </button>
+        <button
+          type="button"
+          class="btn btn-primary"
+          (click)="addSelectedMembers(); modal.dismiss('added')"
+          [disabled]="selectedUsersForAddMember.length === 0"
+        >
+          Add Members
+        </button>
+      </div>
+    </div>
+  </ng-template>
+</div>

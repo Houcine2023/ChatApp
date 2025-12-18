@@ -1,0 +1,35 @@
+.account-pages {
+  min-height: 100vh;
+}
+
+.bg-soft {
+  background-color: #e7f2fd;
+}
+
+.card {
+  border: none;
+  box-shadow: 0 0.75rem 1.5rem rgba(18, 38, 63, 0.03);
+}
+
+.text-primary {
+  color: #556ee6 !important;
+}
+
+.social-list-item {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  text-decoration: none;
+}
+
+a.fw-medium.text-primary {
+  cursor: pointer; /* Ensure clickable */
+  text-decoration: underline; /* Visual cue */
+}
+
+a.fw-medium.text-primary:hover {
+  color: #4458ca; /* Darker shade on hover */
+}

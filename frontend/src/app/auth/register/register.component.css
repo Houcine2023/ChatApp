@@ -1,0 +1,28 @@
+.auth-full-bg {
+  min-height: 100vh;
+  background: url('/assets/images/auth-bg.jpg') no-repeat center center;
+  background-size: cover;
+}
+
+.bg-overlay {
+  background: rgba(0, 0, 0, 0.7);
+  height: 100%;
+}
+
+.auth-full-page-content {
+  background-color: #fff;
+}
+
+.social-list-item {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  text-decoration: none;
+}
+
+.auth-logo-dark, .auth-logo-light {
+  max-height: 18px;
+}
