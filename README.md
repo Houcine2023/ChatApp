@@ -2,121 +2,175 @@
 
 This repository contains the **Real-Time Chat & Collaboration Module** developed for **Skote**, a comprehensive enterprise management platform.
 
-### 📋 Project Context
-**Skote** is a full-scale platform designed to facilitate internal communication and management for enterprises. In the full system, employees can:
-* Track their progression in projects they are involved in.
-* Manage daily tasks and workflows.
-* View income, financial data, and internal mail.
+---
 
-**My Contribution:**
-This specific project represents my work during my **Summer Internship at Arabsoft**. I was responsible for designing and building this **Real-Time Chat Section** to enable instant communication and collaboration between employees within the Skote ecosystem.
+## 📋 Project Overview
+
+**Skote** is an enterprise-grade platform designed to streamline internal communication and management. Within the full ecosystem, employees can:
+
+* Track progress across assigned projects
+* Manage daily tasks and workflows
+* Access income, financial insights, and internal mail
+
+### 🎯 My Contribution
+
+This module represents my work during my **Summer Internship at Arabsoft**. I was responsible for **designing and implementing the Real-Time Chat section**, enabling instant communication and collaboration between employees within Skote.
+
+---
+
+## 🏷️ Badges
 
 ![License](https://img.shields.io/badge/License-MIT-blue.svg)
 ![Angular](https://img.shields.io/badge/Angular-18.0-dd0031.svg)
 ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.2-6db33f.svg)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-336791.svg)
 
+---
+
 ## ✨ Key Features
 
-* **Real-Time Communication:** Instant messaging powered by **WebSockets** (SockJS + RxStomp).
-* **Group & Private Chat:** Create groups, manage members (Admin privileges), or chat 1-on-1.
-* **Presence System:** Real-time "Online/Offline" status indicators and "Last Seen" tracking.
-* **Rich Media Support:** Send text, emojis (Emoji Mart integration), images, and file attachments.
-* **Smart Notifications:** Toast notifications when added to groups or receiving new messages.
-* **Modern UI:** Responsive design using **Bootstrap** and **SCSS**, with a polished sidebar/chat-window layout.
-* **Security:** Secure authentication flow (JWT/Session-based) with Spring Security.
+* **Real-Time Communication** — Instant messaging using **WebSockets** (SockJS + RxStomp)
+* **Private & Group Chats** — 1-on-1 conversations and group creation with admin/member roles
+* **Presence System** — Live *Online / Offline* indicators with **Last Seen** tracking
+* **Rich Media Support** — Text messages, emojis (Emoji Mart), images, and file attachments
+* **Smart Notifications** — Toast alerts for new messages and group invitations
+* **Modern UI** — Responsive layout with **Bootstrap 5** and **SCSS**
+* **Security** — JWT / session-based authentication with **Spring Security**
+
+---
 
 ## 🏗️ Architecture & Design
 
 ### Backend Architecture
-This diagram illustrates how the Spring Boot backend handles WebSocket connections, REST API requests, and database interactions.
-![Backend Architecture](screenshots/backend-architecture.png)
+
+Spring Boot backend handling REST APIs, WebSocket messaging, and database persistence.
+
+![Backend Architecture](screenshots/backend-architecture.png.png)
 
 ### Class Diagram
-An overview of the database models and their relationships (Users, Messages, Groups, etc.).
-![Class Diagram](screenshots/class-diagram.png)
+
+Database entities and relationships (Users, Messages, Groups, Memberships, etc.).
+
+![Class Diagram](screenshots/class-diagram.png.png)
+
+---
 
 ## 🛠️ Tech Stack
 
 ### Frontend
+
 * **Framework:** Angular 18 (Standalone Components)
 * **Styling:** SCSS, Bootstrap 5
-* **State/Async:** RxJS
-* **WebSocket Client:** @stomp/rx-stomp, sockjs-client
+* **Reactive Programming:** RxJS
+* **WebSocket Client:** `@stomp/rx-stomp`, `sockjs-client`
 
 ### Backend
+
 * **Framework:** Spring Boot 3 (Java 17)
-* **Database:** PostgreSQL
+* **Database:** PostgreSQL 16
 * **Security:** Spring Security, BCrypt
-* **Real-time:** Spring WebSocket (STOMP messaging)
+* **Real-Time Messaging:** Spring WebSocket (STOMP)
 * **Build Tool:** Maven
+
+---
 
 ## 🚀 Getting Started
 
 ### Prerequisites
-* Node.js (v18+)
-* Java JDK 17+
+
+* Node.js **v18+**
+* Java **JDK 17+**
 * PostgreSQL installed and running
 
-### 1. Database Setup
-Create a PostgreSQL database named `chatapp` (or update `application.properties` to match your existing DB).
+---
+
+### 1️⃣ Database Setup
+
+Create a PostgreSQL database named `chatapp` (or update the configuration accordingly):
+
 ```sql
 CREATE DATABASE chatapp;
+```
 
+---
 
-2. Backend Setup
-Navigate to the backend folder and run the application.
+### 2️⃣ Backend Setup
 
+```bash
 cd backend
-# Update src/main/resources/application.properties with your DB username/password
+# Configure database credentials in src/main/resources/application.properties
 mvn clean install
 mvn spring-boot:run
+```
 
-The backend will start on http://localhost:8080.
+Backend runs at: **[http://localhost:8080](http://localhost:8080)**
 
-3. Frontend Setup
-Navigate to the frontend folder, install dependencies, and start the server.
+---
 
+### 3️⃣ Frontend Setup
+
+```bash
 cd frontend
 npm install
 ng serve
-Access the application at http://localhost:4200.
+```
 
+Frontend runs at: **[http://localhost:4200](http://localhost:4200)**
 
-## 📸 Project Screenshots
+---
 
-**Main Chat Interface**
+## 📸 Screenshots
+
+### Main Chat Interface
+
 ![Chat Interface](screenshots/chatinterface.png)
 
-**Create Group Modal**
-![Group Modal](screenshots/creategroup.png)
+### Create Group Modal
 
-**Sending Media Examples**
-![Images](screenshots/sendimage1.png)
+![Create Group](screenshots/creategroup.png)
 
-![Images](screenshots/sendimage2.png)
+### Sending Media
 
-**Tracking User Presence(Active Status)**
-![Active Status](screenshots/presence.png)
+![Send Image 1](screenshots/sendimage1.png)
+![Send Image 2](screenshots/sendimage2.png)
 
+### User Presence (Active Status)
 
+![Presence](screenshots/presence.png)
 
+---
 
-chat interface :
+## 📂 Project Structure
 
-
-
-📂 Project Structure
-├── backend/            # Spring Boot Application
-│   ├── src/main/java   # Controllers, Services, WebSocket Config, Models
-│   └── src/main/res    # Properties & Static Resources
+```text
+├── backend/            # Spring Boot application
+│   ├── src/main/java   # Controllers, Services, WebSocket config, Entities
+│   └── src/main/res    # application.properties & resources
 │
-├── frontend/           # Angular Application
-│   ├── src/app/        # Components (Chat, Auth), Services (WebSocket, Http)
-│   └── src/assets/     # Images & Global Styles
+├── frontend/           # Angular application
+│   ├── src/app/        # Components (Chat, Auth), Services (HTTP, WebSocket)
+│   └── src/assets/     # Images & global styles
+```
 
-🤝 Contributing
-Contributions, issues, and feature requests are welcome!
+---
 
-📧 Contact
-Houcine - GitHub Profile
+## 🤝 Contributing
+
+Contributions, bug reports, and feature requests are welcome.
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/my-feature`)
+3. Commit your changes
+4. Push to the branch
+5. Open a Pull Request
+
+---
+
+## 📧 Contact
+
+**Houcine**
+GitHub: *Your GitHub Profile URL here*
+
+---
+
+> 💡 This module showcases real-time system design, WebSocket communication, and full-stack integration using Angular & Spring Boot — developed as part of an enterprise-grade platform during my internship at **Arabsoft**.
